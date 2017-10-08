@@ -164,8 +164,11 @@
       - Check that it has been created by either CURLing the index action or going to the url on chrome.
       - Feel free to test out all the other endpoints if you have time!
 
-  6. 
+  6. Now that you already created the Children Controller, you will need to follow the similar structure and create the controller for the Tasks and Chores Controllers!
 
+  - - -
+# <span class="mega-icon mega-icon-issue-opened"></span> Stop
+Show a TA that you have properly created the barebone API for the ChoreTracker!
 
 
 
