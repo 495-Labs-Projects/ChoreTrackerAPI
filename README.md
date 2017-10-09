@@ -271,7 +271,43 @@ Swagger::Docs::Config.register_apis({
   end
   ```
 
-  5. 
+  5. Now that you have wrote up the documentation for the rails api, you can generate the Swagger Docs by running the following command. You should verify that it was properly created by checking the ```public/apidocs/``` folder and seeing if it contains 2 files (api-docs.json and children.json). api-docs.json contains the general info about your api and each controller should have one json file for it. 
+
+  ```
+  $ rake swagger:docs
+  ```
+
+  6. After you generate the Swagger Docs, your next step is to get swagger ui to display the JSON in a user friendly manner using Swagger UI! Change you directory to the public folder:
+
+  ```
+  $ cd public/
+  ```
+
+  Then you want to include the Swagger UI in the public folder as a git submodule under the folder name api/:
+
+  ```
+  $ git submodule add https://github.com/495-Labs-Projects/RailsSwaggerUI api
+  ```
+
+  You should now have a folder under public/api/ where all of swagger ui files (html, css, javascript) will be.
+
+  6. Start up your server using rails s and then go to http://localhost:3000/api and you should see something like this:
+
+  ![](https://github.com/495-Labs-Projects/RailsSwaggerExample/blob/master/public/swagger-sreenshot.png "Swagger UI Screenshot")
+
+  7. Play around with the swagger docs and try to view, create, edit, and delete different children using the Swagger Docs/UI. This documents and makes interactions with your API endpoints much more easier and you won't need to use curl to hit an endpoint.
+
+  8. Now that you created this for the children_controller, create documentaiton for both the tasks_controller and chores_controller, by adding in similar documentation code in the file itself.
+
+
+  - - -
+# <span class="mega-icon mega-icon-issue-opened"></span> Stop
+Show a TA that you have properly created the barebone API for the ChoreTracker!
+
+
+#### Custom Serialization
+
+1. Once you have created the barebone API for ChoreTracker and documenting it, there are a lot more things you can do to improve it and make it more usable. One main thing is serialization, which is how Rails converts a Child/Task/Chore model object to JSON. With the active_model_serializers, you can truly customize how you want these objects to show up in your API. One good example of this is to display all the chores that are tied to a child when viewing the show action of a child. First of all add the gem to your gemfile: ```gem 'active_model_serializers'``` and run bundle install.
 
 
 
