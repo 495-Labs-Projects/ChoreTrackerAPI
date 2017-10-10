@@ -356,7 +356,17 @@ class ChildSerializer < ActiveModel::Serializer
 end
 ```
 
+#### Token Authentication
 
+1. Now we will tackle authentication for API's since we don't want just anyone modifying the chores (espeically the children)!!! This will be slightly different from authentication for regular Rails applications mainnly because the authentication will be stateless and we will be using a token (instead of a emai and password). For this to work we will first need to create a User model! Follow the specifications below and generate a new User model and run ```rake db:migrate```. Note that there is still a email and password because we still want there to be a way later on for users to retrieve their authentication token (if they forgot it) by authentication through email and password.
+
+  - User
+    - email (string)
+    - password_digest (string)
+    - api_key (string)
+    - active (boolean)
+
+2. 
 
 
 
