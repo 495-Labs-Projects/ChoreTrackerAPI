@@ -309,7 +309,9 @@ Show a TA that you have properly created the barebone API for the ChoreTracker!
 
 1. Once you have created the barebone API for ChoreTracker and documenting it, there are a lot more things you can do to improve it and make it more usable. One main thing is serialization, which is how Rails converts a Child/Task/Chore model object to JSON. With the active_model_serializers, you can truly customize how you want these objects to show up in your API. One good example of this is to display all the chores that are tied to a child when viewing the show action of a child. First of all add the gem to your gemfile: ```gem 'active_model_serializers'``` and run bundle install.
 
-2. Now you can actually generate some boiler plate code for your serializer, but running ```rails generate serializer <controller_name>``` so for example, ```rails generate serializer children``` will create a new file called children_serializer.rb in the serializer folder in app.
+2. Now you can actually generate some boiler plate code for your serializer, but running ```rails generate serializer <model_name>``` so for example, ```rails generate serializer child``` will create a new file called children_serializer.rb in the serializers folder in app. Generate serializer files for each controller.
+
+3. 
 
 
 
