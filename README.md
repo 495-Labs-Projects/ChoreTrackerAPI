@@ -330,17 +330,21 @@ end
 
 6. After that you should go on to adding serialization to the ChoreSerializer, which should include the id, child_id, task_id, due_on, and whether or not it is completed.
 
-7. At this point you have just very standard serialization for each of these models. Let's make ChildSerializer more interesting! It would probably be useful to include the total number of points that the child has earned (good thing we wrote this function already in the model). Include that as an attribute of the ChildSerializer. Next, it probably makes more sense to break up the chores list into completed and unfinished chores for each child. You will need to write a custom method to do this and won't need to relationship to chores. In this case, the variable object will always represent the current object that you are trying to serialize, so we are getting all the chores tied to the specific child and running the done and pending scopes on it.
+7. At this point you have just very standard serialization for each of these models. Let's make ChildSerializer more interesting! It would probably be useful to include the total number of points that the child has earned (good thing we wrote this function already in the model). Include that as an attribute of the ChildSerializer. Next, it probably makes more sense to break up the chores list into completed and unfinished chores for each child. You will need to write a custom method to do this and won't need the relationship to chores. In this case, the variable object will always represent the current object that you are trying to serialize, so we are getting all the chores tied to the specific child and running the done and pending scopes on it. After getting each of the relations, we still need to manually serialize each one using the ChoreSerializer class.
 ```
 class ChildSerializer < ActiveModel::Serializer
   attributes :id, :name, :points_earned, :active, :completed_chores, :pending_chores
 
   def completed_chores
-    object.chores.done
+    object.chores.done.map do |chore|
+      ChoreSerializer.new(chore)
+    end
   end
 
   def pending_chores
-    object.chores.pending
+    object.chores.pending.map do |chore|
+      ChoreSerializer.new(chore)
+    end
   end
   
 end
