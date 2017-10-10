@@ -6,6 +6,14 @@
     {
       "path": "/apidocs/children.{format}",
       "description": "Children Management"
+    },
+    {
+      "path": "/apidocs/tasks.{format}",
+      "description": "Tasks Management"
+    },
+    {
+      "path": "/apidocs/chores.{format}",
+      "description": "Chores Management"
     }
   ],
   "authorizations": null,
