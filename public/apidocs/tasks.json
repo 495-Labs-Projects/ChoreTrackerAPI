@@ -10,15 +10,6 @@
         {
           "summary": "Fetches all Tasks",
           "notes": "This lists all the tasks",
-          "parameters": [
-            {
-              "paramType": "header",
-              "name": "Authorization",
-              "type": "string",
-              "description": "Authorization Token",
-              "required": true
-            }
-          ],
           "nickname": "Tasks#index",
           "method": "get"
         }

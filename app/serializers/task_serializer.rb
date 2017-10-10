@@ -1,3 +1,3 @@
 class TaskSerializer < ActiveModel::Serializer
-  attributes :id
+  attributes :id, :name, :points, :active
 end

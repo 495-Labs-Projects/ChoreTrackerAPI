@@ -8,7 +8,6 @@ class TasksController < ApplicationController
   swagger_api :index do
     summary "Fetches all Tasks"
     notes "This lists all the tasks"
-    param :header, "Authorization", :string, :required, "Authorization Token"
   end
 
   # Show needs a param which is which task id to show.

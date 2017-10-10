@@ -297,7 +297,7 @@ Swagger::Docs::Config.register_apis({
 
   7. Play around with the swagger docs and try to view, create, edit, and delete different children using the Swagger Docs/UI. This documents and makes interactions with your API endpoints much more easier and you won't need to use curl to hit an endpoint.
 
-  8. Now that you created this for the children_controller, create documentaiton for both the tasks_controller and chores_controller, by adding in similar documentation code in the file itself.
+  8. Now that you created this for the children_controller, create documentaiton for both the tasks_controller and chores_controller, by adding in similar documentation code in the file itself. Remember to run ```rake swagger:docs``` every time you make a change to your documentation. (Note: Create a couple of Children, Tasks, and Chores to help test out things in the next part.)
 
 
   - - -
@@ -311,11 +311,40 @@ Show a TA that you have properly created the barebone API for the ChoreTracker!
 
 2. Now you can actually generate some boiler plate code for your serializer, but running ```rails generate serializer <model_name>``` so for example, ```rails generate serializer child``` will create a new file called children_serializer.rb in the serializers folder in app. Generate serializer files for each controller.
 
-3. 
+3. By default for the child serializer you should just see the following. This means that when serializing a child object to JSON it will only display the id. To check that this is the case, start up your rails server and go to /children which is the index action. Now instead of the whole object with first_name and last_name, you should only see the id for each child, which is how the serializer is defined.
+```
+class ChildSerializer < ActiveModel::Serializer
+  attributes :id
+end
+```
 
+4. Let's start off by adding what we want to the ChildSerializer. In this case we want to display the id, name of the child, whether or not it is active, and the list of chores that it has. To do this, after the :id, also add :name and :active. The reason that name works even though the Child Model doesn't have a name attribute (only first_name and last_name) is because we had already defined a method call name in the Child Model that combines the first and last names. Next we need to get all the chores that is related to this child. To do so, we need to add a relationship, just like with the model by writing ```has_many :chores```. Your ChildSerializer should look something like the following. Verify that it worked by checking with Swagger Docs.
+```
+class ChildSerializer < ActiveModel::Serializer
+  attributes :id, :name, :active
+  has_many :chores
+end
+``` 
 
+5. Let's go onto fixing the TaskSerializer. For this follow the same idea, but we only need to display the id, name, points that its worth, and whether or not it is active.
 
+6. After that you should go on to adding serialization to the ChoreSerializer, which should include the id, child_id, task_id, due_on, and whether or not it is completed.
 
+7. At this point you have just very standard serialization for each of these models. Let's make ChildSerializer more interesting! It would probably be useful to include the total number of points that the child has earned (good thing we wrote this function already in the model). Include that as an attribute of the ChildSerializer. Next, it probably makes more sense to break up the chores list into completed and unfinished chores for each child. You will need to write a custom method to do this and won't need to relationship to chores. In this case, the variable object will always represent the current object that you are trying to serialize, so we are getting all the chores tied to the specific child and running the done and pending scopes on it.
+```
+class ChildSerializer < ActiveModel::Serializer
+  attributes :id, :name, :points_earned, :active, :completed_chores, :pending_chores
+
+  def completed_chores
+    object.chores.done
+  end
+
+  def pending_chores
+    object.chores.pending
+  end
+  
+end
+```
 
 
 
