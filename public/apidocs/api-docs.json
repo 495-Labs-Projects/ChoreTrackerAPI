@@ -14,6 +14,10 @@
     {
       "path": "/apidocs/chores.{format}",
       "description": "Chores Management"
+    },
+    {
+      "path": "/apidocs/users.{format}",
+      "description": "Users Management"
     }
   ],
   "authorizations": null,

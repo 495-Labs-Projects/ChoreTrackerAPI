@@ -43,3 +43,4 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'validates_timeliness'
 gem 'swagger-docs'
 gem 'active_model_serializers'
+gem 'bcrypt'

@@ -2,10 +2,10 @@
   "apiVersion": "1.0",
   "swaggerVersion": "1.2",
   "basePath": "http://localhost:3000",
-  "resourcePath": "chores",
+  "resourcePath": "users",
   "apis": [
     {
-      "path": "/chores.json",
+      "path": "/users.json",
       "operations": [
         {
           "parameters": [
@@ -17,15 +17,15 @@
               "required": true
             }
           ],
-          "summary": "Fetches all Chores",
-          "notes": "This lists all the chores",
-          "nickname": "Chores#index",
+          "summary": "Fetches all Users",
+          "notes": "This lists all the users",
+          "nickname": "Users#index",
           "method": "get"
         }
       ]
     },
     {
-      "path": "/chores.json",
+      "path": "/users.json",
       "operations": [
         {
           "parameters": [
@@ -38,34 +38,34 @@
             },
             {
               "paramType": "form",
-              "name": "child_id",
-              "type": "integer",
-              "description": "Child ID",
+              "name": "email",
+              "type": "string",
+              "description": "Email",
               "required": true
             },
             {
               "paramType": "form",
-              "name": "task_id",
-              "type": "integer",
-              "description": "Task ID",
+              "name": "password",
+              "type": "password",
+              "description": "Password",
               "required": true
             },
             {
               "paramType": "form",
-              "name": "due_on",
-              "type": "date",
-              "description": "Due On",
+              "name": "password_confirmation",
+              "type": "password",
+              "description": "Password Confirmation",
               "required": true
             },
             {
               "paramType": "form",
-              "name": "completed",
+              "name": "active",
               "type": "boolean",
-              "description": "Completed",
+              "description": "active",
               "required": true
             }
           ],
-          "summary": "Creates a new Chore",
+          "summary": "Creates a new User",
           "responseMessages": [
             {
               "code": 406,
@@ -73,13 +73,13 @@
               "message": "Not Acceptable"
             }
           ],
-          "nickname": "Chores#create",
+          "nickname": "Users#create",
           "method": "post"
         }
       ]
     },
     {
-      "path": "/chores/{id}.json",
+      "path": "/users/{id}.json",
       "operations": [
         {
           "parameters": [
@@ -94,73 +94,12 @@
               "paramType": "path",
               "name": "id",
               "type": "integer",
-              "description": "Chore ID",
+              "description": "User ID",
               "required": true
             }
           ],
-          "summary": "Shows one Chore",
-          "notes": "This lists details of one chore",
-          "responseMessages": [
-            {
-              "code": 404,
-              "responseModel": null,
-              "message": "Not Found"
-            }
-          ],
-          "nickname": "Chores#show",
-          "method": "get"
-        }
-      ]
-    },
-    {
-      "path": "/chores/{id}.json",
-      "operations": [
-        {
-          "parameters": [
-            {
-              "paramType": "header",
-              "name": "Authorization",
-              "type": "string",
-              "description": "Authentication token in the format of: Token token=<token>",
-              "required": true
-            },
-            {
-              "paramType": "path",
-              "name": "id",
-              "type": "integer",
-              "description": "Chore ID",
-              "required": true
-            },
-            {
-              "paramType": "form",
-              "name": "child_id",
-              "type": "integer",
-              "description": "Child ID",
-              "required": false
-            },
-            {
-              "paramType": "form",
-              "name": "task_id",
-              "type": "integer",
-              "description": "Task ID",
-              "required": false
-            },
-            {
-              "paramType": "form",
-              "name": "due_on",
-              "type": "date",
-              "description": "Due On",
-              "required": false
-            },
-            {
-              "paramType": "form",
-              "name": "completed",
-              "type": "boolean",
-              "description": "Completed",
-              "required": false
-            }
-          ],
-          "summary": "Updates an existing Chore",
+          "summary": "Shows one User",
+          "notes": "This lists details of one user",
           "responseMessages": [
             {
               "code": 404,
@@ -173,13 +112,31 @@
               "message": "Not Acceptable"
             }
           ],
-          "nickname": "Chores#update",
+          "nickname": "Users#show",
+          "method": "get"
+        }
+      ]
+    },
+    {
+      "path": "/users/{id}.json",
+      "operations": [
+        {
+          "parameters": [
+            {
+              "paramType": "header",
+              "name": "Authorization",
+              "type": "string",
+              "description": "Authentication token in the format of: Token token=<token>",
+              "required": true
+            }
+          ],
+          "nickname": "Users#update",
           "method": "patch"
         }
       ]
     },
     {
-      "path": "/chores/{id}.json",
+      "path": "/users/{id}.json",
       "operations": [
         {
           "parameters": [
@@ -187,19 +144,24 @@
               "paramType": "path",
               "name": "id",
               "type": "integer",
-              "description": "Chore Id",
+              "description": "User Id",
               "required": true
             }
           ],
-          "summary": "Deletes an existing Chore",
+          "summary": "Deletes an existing User",
           "responseMessages": [
             {
               "code": 404,
               "responseModel": null,
               "message": "Not Found"
+            },
+            {
+              "code": 406,
+              "responseModel": null,
+              "message": "Not Acceptable"
             }
           ],
-          "nickname": "Chores#destroy",
+          "nickname": "Users#destroy",
           "method": "delete"
         }
       ]

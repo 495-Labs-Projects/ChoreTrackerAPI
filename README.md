@@ -337,7 +337,8 @@ end
 6. After that you should go on to adding serialization to the ChoreSerializer, which should include the id, child_id, task_id, due_on, and whether or not it is completed.
 
 7. At this point you have just very standard serialization for each of these models. Let's make ChildSerializer more interesting! It would probably be useful to include the total number of points that the child has earned (good thing we wrote this function already in the model). Include that as an attribute of the ChildSerializer. Next, it probably makes more sense to break up the chores list into completed and unfinished chores for each child. You will need to write a custom method to do this and won't need the relationship to chores. In this case, the variable object will always represent the current object that you are trying to serialize, so we are getting all the chores tied to the specific child and running the done and pending scopes on it. After getting each of the relations, we still need to manually serialize each one using the ChoreSerializer class.
-```
+
+```ruby
 class ChildSerializer < ActiveModel::Serializer
   attributes :id, :name, :points_earned, :active, :completed_chores, :pending_chores
 
@@ -366,7 +367,200 @@ end
     - api_key (string)
     - active (boolean)
 
-2. 
+2. For now lets fill the User model with some validations. This is pretty standard and we have already done something similar before, so just copy paste the code below to your User model.
+
+``` ruby
+class User < ApplicationRecord
+  has_secure_password
+
+  validates_presence_of :email
+  validates_uniqueness_of :email, allow_blank: true
+  validates_presence_of :password, on: :create 
+  validates_presence_of :password_confirmation, on: :create 
+  validates_confirmation_of :password, message: "does not match"
+  validates_length_of :password, minimum: 4, message: "must be at least 4 characters long", allow_blank: true
+end
+```
+
+3. So the general idea of the api_key is so that when someone sends a GET/POST/etc. request to your api, they will also need to provide the token in a header. Your API will then try to authenticate with that token and see what authorization that user has. This means that the api_key needs to be unique so we will not be allowing users to change/create the api_key. Instead we will be generating a random api_key for each user when it is created. Therefore we will write a new callback function in the model code for creating the api_key. The following is the new model code. Please understand it before continuing, or else everything will be rather confusing!!!!! (Note: Don't forget to add the ```gem bcrypt``` to the Gemfile for passwords).
+
+```
+class User < ApplicationRecord
+  has_secure_password
+
+  validates_presence_of :email
+  validates_uniqueness_of :email, allow_blank: true
+  validates_presence_of :password, on: :create 
+  validates_presence_of :password_confirmation, on: :create 
+  validates_confirmation_of :password, message: "does not match"
+  validates_length_of :password, minimum: 4, message: "must be at least 4 characters long", allow_blank: true
+  validates_uniqueness_of :api_key
+
+  before_create :generate_api_key
+
+  def generate_api_key
+    begin
+      self.api_key = SecureRandom.hex
+    end while User.exists?(api_key: self.api_key)
+  end
+end
+```
+
+4. Now we should create the User controller and the Swagger Docs for the controller. This should be quick since you have done this already for all the other controllers. (Note: make sure that the user params method permits these parameters because we don't want them creating the api_key: params.permit(:email, :password, :password_confirmation, :role, :api_key, :active)) After you are done, verify that it is the same as below and make sure the create documentation has the right form parameters. Also add the user resources to the routes.rb and run ```rake swagger:docs```
+
+```
+class UsersController < ApplicationController
+  # This is to tell the gem that this controller is an API
+  swagger_controller :users, "Users Management"
+
+  # Each API endpoint index, show, create, etc. has to have one of these descriptions
+
+  # This one is for the index action. The notes param is optional but helps describe what the index endpoint does
+  swagger_api :index do
+    summary "Fetches all Users"
+    notes "This lists all the users"
+  end
+
+  # Show needs a param which is which user id to show.
+  # The param defines that it is in the path, and that it is the User's ID
+  # The response params here define what type of error responses can be returned back to the user from your API. In this case the error responses are 404 not_found and not_acceptable.
+  swagger_api :show do
+    summary "Shows one User"
+    param :path, :id, :integer, :required, "User ID"
+    notes "This lists details of one user"
+    response :not_found
+    response :not_acceptable
+  end
+
+  # Create doesn't take in the user id, but rather the required fields for a user (namely first_name and last_name)
+  # Instead of a path param, this uses form params and defines them as required
+  swagger_api :create do
+    summary "Creates a new User"
+    param :form, :email, :string, :required, "Email"
+    param :form, :password, :password, :required, "Password"
+    param :form, :password_confirmation, :password, :required, "Password Confirmation"
+    param :form, :active, :boolean, :required, "active"
+    response :not_acceptable
+  end
+
+  # Lastly destroy is just like the rest and just takes in the param path for user id. 
+  swagger_api :destroy do
+    summary "Deletes an existing User"
+    param :path, :id, :integer, :required, "User Id"
+    response :not_found
+    response :not_acceptable
+  end
+
+
+  # Controller Code
+
+  before_action :set_user, only: [:show, :update, :destroy]
+
+  # GET /users
+  def index
+    @users = User.all
+
+    render json: @users
+  end
+
+  # GET /users/1
+  def show
+    render json: @user
+  end
+
+  # POST /users
+  def create
+    @user = User.new(user_params)
+
+    if @user.save
+      render json: @user, status: :created, location: @user
+    else
+      render json: @user.errors, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /users/1
+  def destroy
+    @user.destroy
+  end
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_user
+      @user = User.find(params[:id])
+    end
+
+    # Only allow a trusted parameter "white list" through.
+    def user_params
+      params.permit(:email, :password, :password_confirmation, :role, :api_key, :active)
+    end
+end
+```
+
+5. We should also create a new serializer for users since we really don't want to display the password_digest, but we do need to show the api_key. 
+
+6. We can now start up the rails server and test out whether or not our user model creation worked! Create a new user using Swagger and save the api_key from the response, this is very important for the next steps!
+
+7. Next we need to actually implement the authentication with the tokens so that nobody can modify anything in the system without having a proper token. You will need to add the following to the ApplicationController. This uses the built in ```authenticate_with_http_token``` method which checks if it is a valid token and if anything fails, it will just render the Bad Credentials JSON. How it works is that every request that comes through has to have an Authorization header with the specified token and that is what rails will check in order to authenticate. Also for simplicity, we authenticated for all actions in all controllers by putting a before_action in the ApplicationController.
+
+```ruby
+class ApplicationController < ActionController::API
+  include ActionController::HttpAuthentication::Token::ControllerMethods
+
+  before_action :authenticate
+
+  protected
+
+  def authenticate
+    authenticate_token || render_unauthorized
+  end
+
+  def authenticate_token
+    authenticate_with_http_token do |token, options|
+      @current_user = User.find_by(api_key: token)
+    end
+  end
+
+  def render_unauthorized(realm = "Application")
+    self.headers["WWW-Authenticate"] = %(Token realm="#{realm.gsub(/"/, "")}")
+    render json: {error: "Bad Credentials"}, status: :unauthorized
+  end
+end
+```
+
+8. If you restart the server now and try to use Swagger to test out any of the endpoints in any controller, you will be faced with the Bad Credentials message. To fix this we need to change the swagger docs so that it will pass along the token in the headers of every request. There are two ways to do this, one way is to add another header param to every single endpoint; another way is to add a setup method for swagger docs to pick up. In order to do this, all we need to do is write this subclass in the ApplicationController class so that it will affect all of the other controllers. All this does is it goes to all the subclasses of ApplicationController and then adds the header param to each of the actions. 
+
+```ruby
+class << self
+  def inherited(subclass)
+    super
+    subclass.class_eval do
+      setup_basic_api_documentation
+    end
+  end
+
+  private
+  def setup_basic_api_documentation
+    [:index, :show, :create, :update, :delete].each do |api_action|
+      swagger_api api_action do
+        param :header, 'Authorization', :string, :required, 'Authentication token in the format of: Token token=<token>'
+      end
+    end
+  end
+end
+```
+
+9. Now go back to 
+
+
+
+
+
+
+
+
+
+
 
 
 
