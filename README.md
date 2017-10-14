@@ -550,14 +550,7 @@ class << self
 end
 ```
 
-9. Now go back to 
-
-
-
-
-
-
-
+9. Make sure you run ```rake swagger:docs```, start up the server and check out the swagger docs. For each endpoint, there should be a header param. In order to successfully hit any of the endpoints, you will need to fill out this param too. This is a little bit more complicated as before since rails has its own format/way to do things. In the input box, enter "Token token=<api_token>" and replace <api_token> with the token from the user you created before. Now check that the API works with the token authentication!
 
 
 
