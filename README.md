@@ -553,7 +553,27 @@ end
 9. Make sure you run ```rake swagger:docs```, start up the server and check out the swagger docs. For each endpoint, there should be a header param. In order to successfully hit any of the endpoints, you will need to fill out this param too. This is a little bit more complicated as before since rails has its own format/way to do things. In the input box, enter "Token token=<api_token>" and replace <api_token> with the token from the user you created before. Now check that the API works with the token authentication!
 
 
+### Bonus Section
 
+1. When developing an API in the real world, there are more things that you need to take care of before you put your application in production. One major thing is adding a layer of middleware to protect against malicious attacks. Middleware is everything that exists between your application server (what actually hosts your web app) and the actual Rails application. So what happens when you have an user that just keeps on spamming your API and slowing down your service? Well there are ways to prevent that through your middleware by throttling those users (basically telling them to back off a little bit before hitting your server again). One such middleware is Rack::Attack!!
+
+2. First you need to include Rack Attack in your gem file and run bundle install.
+
+``` ruby
+gem 'rack-attack'
+```
+
+3. Then you need to setup an initializer in order for Rack Attack to work. All you need to do is go to ```config/initializers/``` and create a new file called rack_attack.rb and put the following in the file. All this means is that you are throttling (or limiting) hits from users by their ip addresses and you are setting the limit to 3 hits within 10 seconds. Usually that number should be a lot higher, but we kept it low just for testing purposes.
+
+```
+class Rack::Attack 
+  Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new 
+
+  throttle('req/ip', limit: 3, period: 10) do |req|
+    req.ip
+  end
+end
+```
 
 
 
