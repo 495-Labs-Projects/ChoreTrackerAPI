@@ -575,5 +575,38 @@ class Rack::Attack
 end
 ```
 
+4. Before you go on you will also need to add the following to your ```config/application.rb``` file.
 
+```ruby
+module ChoreTrackerAPI
+  class Application < Rails::Application
+    # Exisiting code
+
+    config.middleware.use Rack::Attack
+  end
+end
+
+```
+
+5. Now if you use Swagger Docs or Curl to hit your RESTful API 4 times quickly! You will find that on the 4th try you will be rejected with a Retry Later message. This may not look very consistent with the rest of the JSON response, so we need to change how the error message is displayed. To do so, go back to the initializer and change the code to the following. We will not go through exactly what the code means, but it generall means that it will respond instead with a JSON object with the 429 error code.
+
+```ruby
+class Rack::Attack 
+  Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new 
+
+  throttle('req/ip', limit: 3, period: 10) do |req|
+    req.ip
+  end
+
+  self.throttled_response = ->(env) {
+    retry_after = (env['rack.attack.match_data'] || {})[:period]
+    [
+      429,
+      {'Content-Type' => 'application/json', 'Retry-After' => retry_after.to_s},
+      [{error: "Throttle limit reached. Retry later."}.to_json]
+    ]
+  }
+end
+```
+6. Now your application will be protected against any user/from an ip address from spamming your API and slowly down your server!
 
