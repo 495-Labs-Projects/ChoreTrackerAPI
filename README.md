@@ -10,13 +10,13 @@ In this lab we will be creating an RESTful API version of the ChoreTracker appli
 
 # Part 1 - Building the API
 
-1. We will not be using any starter code for this application since everything will be built from scratch to help you understand the full process. First of all create a new rails application using the api flag and call it ChoreTrackerAPI. THe api flag allows rails to know how the application is intended to be used and will make sure to set up the right things in order to make the application RESTful.
+1. We will not be using any starter code for this application since everything will be built from scratch to help you understand the full process. First of all create a new rails application using the api flag and call it ChoreTrackerAPI. The api flag allows rails to know how the application is intended to be used and will make sure to set up the right things in order to make the application RESTful.
 
   ```
   $ rails new ChoreTrackerAPI --api
   ```
 
-2. Just as the ChoreTracker that you have build before there will be 3 main entities to the ChoreTracker application, please review the old lab if you want any clarifications on the ERD. Based on these specifications, please generate all the models with all the proper fields and then run ```rake db:migrate```. This step should be the same as if you were building a regular rails application. (ex. ```rails generate model Child first_name:string last_name:string active:boolean```)
+2. Just like the ChoreTracker app that you have built before, there will be 3 main entities to the ChoreTracker application, please review the old lab if you want any clarifications on the ERD. The following are the data dictionaries for the 3 models. Based on these specifications, please generate all the models with all the proper fields and then run ```rails db:migrate```. This step should be the same as if you were building a regular rails application. (ex. ```rails generate model Child first_name:string last_name:string active:boolean```)
   - Child
     - first_name (string)
     - last_name (string)
@@ -31,7 +31,7 @@ In this lab we will be creating an RESTful API version of the ChoreTracker appli
     - due_on (date)
     - completed (boolean)
 
-3. Now add in the model code below for each of the models. The code here is exactly the same as what you have done in the old ChoreTracker Application, which is why we won't require you to rewrite everything! (Note: don't forget to add the validates_timeliness gem to the Gemfile in order to get some of the validations to work.)
+3. Now add in the model code below for each of the models. The code here is exactly the same as what you have done in the old ChoreTracker Application, which is why we won't require you to rewrite everything! (Note: don't forget to add the **validates_timeliness** gem to the Gemfile in order to get some of the validations to work.)
 
   ```ruby
   class Child < ApplicationRecord
@@ -89,12 +89,14 @@ In this lab we will be creating an RESTful API version of the ChoreTracker appli
   end
   ```
 
-4. Now we will be starting to build out the controllers for the models that we just built. As you remember, we will not be building any views since literally all user output from a RESTful API is just JSON (no need for HTML/CSS/JS). First let's go through the process of creating the controller for the Child model and then you will need create the controllers for the other 2 models. So unlike in a normal rails application, in a RESTful one, you will only need 5 (**index, show, create, update, and destroy**) actions instead of 7. We won't be needing the new or edit action since those were only used to display the form, and with only JSON responses, the form will no longer be needed. Create a file called children_controller.rb in the controllers folder, define the class and follow along! (Note: One thing to note here is the idea of the status code. This is especially important when developing a RESTful API to tell users of it what happened. All success type codes (ok, created, etc.) are in the 200 number ranges, and generally other error statuses are either in the 400 or 500 ranges.)
+4. Now we will be starting to build out the controllers for the models that we just made. First, let's create a file called ```children_controller.rb``` in the controllers folder, define the class and follow along!
+
+5. As you remember, we will not be building any views since literally all user output from a RESTful API is just JSON (no need for HTML/CSS/JS). First let's go through the process of creating the controller for the Child model and then you will need create the controllers for the other 2 models. So unlike in a normal rails application, in a RESTful one, you will only need 5 (**index, show, create, update, and destroy**) actions instead of 7. We won't be needing the new or edit action since those were only used to display the form, and with only JSON responses, the form will no longer be needed.  (Note: One thing to note here is the idea of the status code. This is especially important when developing a RESTful API to tell users of it what happened. All success type codes (ok, created, etc.) are in the 200 number ranges, and generally other error statuses are either in the 400 or 500 ranges.)
     1. Index Action (responds to GET) is used to display all of the children that exist and its information/fields. So in this case all you need is to render all of the children objects as json.
   
     2. Show Action (responds to GET) just like before, given a child id from the url path, it will display the information for just that child. This uses the ```set_child method``` to the set the instance variable @child before rendering it.
   
-    3. Create Action (responds to a POST) actually creates a new child given the proper params. Using the ```child_params``` method it gets all the whitelisted params and tries to create a new child. If it properly saves, it will just render the JSON of the child that was just created and attached with a created success status code. If it fails to save, then it will respond with a JSON of all the validation errors and a unprocessably_entity error status code. 
+    3. Create Action (responds to a POST) actually creates a new child given the proper params. Using the ```child_params``` method it gets all the whitelisted params and tries to create a new child. If it properly saves, it will just render the JSON of the child that was just created and attached with a created success status code. If it fails to save, then it will respond with a JSON of all the validation errors and a unprocessably_entity error status code. You might have also noticed this new thing called ```location```, this is a param in the header so that the client will be able to know where this newly created child is (in this case it's the child show page).
   
     4. Update Action (responds to PATCH) updates the information of a child given its ID. The @child variable will be set from the ```set_child``` method and then be populated with the child parameters. Again it will do something similar to create where it checks if the child is valid and return the proper JSON response. 
   
@@ -109,7 +111,7 @@ In this lab we will be creating an RESTful API version of the ChoreTracker appli
     before_action :set_child, only: [:show, :update, :destroy]
 
     # GET /children
-    def index
+    def indexx
       @children = Child.all
 
       render json: @children
@@ -158,7 +160,7 @@ In this lab we will be creating an RESTful API version of the ChoreTracker appli
   end
   ```
 
-5. Now we want to test that our API actually works! Here are just some simple things to test out (Note: Whenever we mention the word endpoint, it is just another way to say action of your controller since each action is an endpoint of your API that you can hit with a GET or POST request):
+6. Now we want to test that our API actually works! Here are just some simple things to test out (Note: Whenever we mention the word endpoint, it is just another way to say action of your controller since each action is an endpoint of your API that you can hit with a GET or POST request):
     1. Go to http://localhost:3000/children and an empty array should appear. This triggers the index action with the GET request and display no children, since none have been created yet.
     
     2. Now we should test how creating a new child. Since we can't easily send POST requests in the browser (not as easy as GET) we will be needing CURL. CURL is a command that you can run in your terminal to hit certain endpoints with GET, POST, etc. requests.
@@ -167,7 +169,7 @@ In this lab we will be creating an RESTful API version of the ChoreTracker appli
       - Check that it has been created by either CURLing the index action or going to the url on chrome.
       - Feel free to test out all the other endpoints if you have time!
 
-6. Now that you already created the Children Controller, you will need to follow the similar structure and create the controller for the Tasks and Chores Controllers!
+7. Now that you already created the Children Controller, you will need to follow the similar structure and create the controller for the Tasks and Chores Controllers!
 
 
 # <span class="mega-icon mega-icon-issue-opened"></span>Stop
@@ -185,7 +187,7 @@ Show a TA that you have completed the first part. Make sure the TA initials your
 2. First we need to set up swagger docs for the RESTful API application. Include the swagger docs gem in your Gemfile ```gem 'swagger-docs'``` and then run ```bundle install```
   - This gem will automatically generate the right JSON files to help document your API if provided the right things. The documentation for the gem is here: https://github.com/richhollis/swagger-docs 
 
-3. Next you will need to create an initializer for the gem and call it swagger_docs.rb. This will tell the gem some basic information about your application and how to generate the JSON for your API. This should go in your ```config/initializers/swagger_docs.rb``` file that you just created. You won't need to fully understand what this whole thing does, but its good to know that all of the autogenerated Swagger Doc files are put in the ```public/apidocs``` folder.
+3. Next you will need to create an initializer for the gem and call it swagger_docs.rb. This will tell the gem some basic information about your application and how to generate the JSON for your API. This should go in your ```config/initializers/swagger_docs.rb``` file that you just created. You won't need to fully understand what this whole thing does, but its good to know that all of the autogenerated Swagger Doc files are put in the ```public/apidocs``` folder. (**Note:** If you are using cloud9 epecially or aren't running it on localhost:3000, make sure to change the ```:base_path``` property to the appropriate host name and port.)
 
   ```ruby
   # config/initializers/swagger_docs.rb
@@ -277,10 +279,10 @@ Show a TA that you have completed the first part. Make sure the TA initials your
     end
     ```
 
-5. Now that you have wrote up the documentation for the rails api, you can generate the Swagger Docs by running the following command. You should verify that it was properly created by checking the ```public/apidocs/``` folder and seeing if it contains 2 files (api-docs.json and children.json). api-docs.json contains the general info about your api and each controller should have one json file for it. 
+5. Now that you have wrote up the documentation for the rails api, you can generate the Swagger Docs by running the following command. You should verify that it was properly created by checking the ```public/apidocs/``` folder and seeing if it contains 2 files (api-docs.json and children.json). api-docs.json contains the general info about your api and each controller should have one json file for it. (**Note:** You might encounter something like this when you run the following: ```2 process / 3 skipped``` Just because it says skipped doesn't mean something went wrong! You can just keep on going.)
 
   ```
-  $ rake swagger:docs
+  $ rails swagger:docs
   ```
 
 6. After you generate the Swagger Docs, your next step is to get swagger ui to display the JSON in a user friendly manner using Swagger UI! Change you directory to the public folder:
@@ -303,7 +305,7 @@ Show a TA that you have completed the first part. Make sure the TA initials your
 
 9. Play around with the swagger docs and try to view, create, edit, and delete different children using the Swagger Docs/UI. This documents and makes interactions with your API endpoints much more easier and you won't need to use curl to hit an endpoint.
 
-10. Now that you created this for the children_controller, create documentation for both the tasks_controller and chores_controller, by adding in similar documentation code in the file itself. Remember to run ```rake swagger:docs``` every time you make a change to your documentation. (Note: Create a couple of Children, Tasks, and Chores to help test out things in the next part.)
+10. Now that you created this for the children_controller, create documentation for both the tasks_controller and chores_controller, by adding in similar documentation code in the file itself. Remember to run ```rails swagger:docs``` every time you make a change to your documentation. (Note: Create a couple of Children, Tasks, and Chores to help test out things in the next part.)
 
 
   - - -
@@ -367,7 +369,7 @@ Show a TA that you have properly serialized JSON objects in the ChoreTrackerAPI!
 
 # Part 4 - Token Authentication
 
-1. Now we will tackle authentication for API's since we don't want just anyone modifying the chores (espeically the children)!!! This will be slightly different from authentication for regular Rails applications mainnly because the authentication will be stateless and we will be using a token (instead of a emai and password). For this to work we will first need to create a User model! Follow the specifications below and generate a new User model and run ```rake db:migrate```. Note that there is still a email and password because we still want there to be a way later on for users to retrieve their authentication token (if they forgot it) by authentication through email and password.
+1. Now we will tackle authentication for API's since we don't want just anyone modifying the chores (espeically the children)!!! This will be slightly different from authentication for regular Rails applications mainnly because the authentication will be stateless and we will be using a token (instead of a emai and password). For this to work we will first need to create a User model! Follow the specifications below and generate a new User model and run ```rails db:migrate```. Note that there is still a email and password because we still want there to be a way later on for users to retrieve their authentication token (if they forgot it) by authentication through email and password.
   - User
     - email (string)
     - password_digest (string)
@@ -413,7 +415,7 @@ Show a TA that you have properly serialized JSON objects in the ChoreTrackerAPI!
   end
   ```
 
-4. Now we should create the User controller and the Swagger Docs for the controller. This should be quick since you have done this already for all the other controllers. (Note: make sure that the user params method permits these parameters because we don't want them creating the api_key: params.permit(:email, :password, :password_confirmation, :role, :api_key, :active)) After you are done, verify that it is the same as below and make sure the create documentation has the right form parameters. Also add the user resources to the routes.rb and run ```rake swagger:docs```
+4. Now we should create the User controller and the Swagger Docs for the controller. This should be quick since you have done this already for all the other controllers. (Note: make sure that the user params method permits these parameters because we don't want them creating the api_key: params.permit(:email, :password, :password_confirmation, :role, :api_key, :active)) After you are done, verify that it is the same as below and make sure the create documentation has the right form parameters. Also add the user resources to the routes.rb and run ```rails swagger:docs```
 
   ```
   class UsersController < ApplicationController
@@ -535,7 +537,7 @@ Show a TA that you have properly serialized JSON objects in the ChoreTrackerAPI!
   end
   ```
 
-8. If you restart the server now and try to use Swagger to test out any of the endpoints in any controller, you will be faced with the Bad Credentials message. To fix this we need to change the swagger docs so that it will pass along the token in the headers of every request. There are two ways to do this, one way is to add another header param to every single endpoint; another way is to add a setup method for swagger docs to pick up. In order to do this, all we need to do is write this subclass in the ApplicationController class so that it will affect all of the other controllers. All this does is it goes to all the subclasses of ApplicationController and then adds the header param to each of the actions. 
+8. If you restart the server now and try to use Swagger to test out any of the endpoints in any controller, you will be faced with the Bad Credentials message. To fix this we need to change the swagger docs so that it will pass along the token in the headers of every request. There are two ways to do this, one way is to add another header param to every single endpoint; another way is to add a setup method for swagger docs to pick up. In order to do this, all we need to do is write this singleton class within in the ApplicationController class so that it will affect all of the other controllers. All this does is it goes to all the subclasses of ApplicationController and then adds the header param to each of the actions. 
 
   ```ruby
   class << self
@@ -557,7 +559,7 @@ Show a TA that you have properly serialized JSON objects in the ChoreTrackerAPI!
   end
   ```
 
-9. Make sure you run ```rake swagger:docs```, start up the server and check out the swagger docs. For each endpoint, there should be a header param. In order to successfully hit any of the endpoints, you will need to fill out this param too. This is a little bit more complicated as before since rails has its own format/way to do things. In the input box, enter "Token token=<api_token>" and replace <api_token> with the token from the user you created before. Now check that the API works with the token authentication!
+9. Make sure you run ```rails swagger:docs```, start up the server and check out the swagger docs. For each endpoint, there should be a header param. In order to successfully hit any of the endpoints, you will need to fill out this param too. This is a little bit more complicated as before since rails has its own format/way to do things. In the input box, enter "Token token=<api_token>" and replace <api_token> with the token from the user you created before. Now check that the API works with the token authentication!
 
 
 * * *
