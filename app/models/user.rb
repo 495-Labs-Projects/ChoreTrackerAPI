@@ -11,6 +11,11 @@ class User < ApplicationRecord
 
   before_create :generate_api_key
 
+  # login by email address
+  def self.authenticate(email, password)
+    find_by_email(email).try(:authenticate, password)
+  end
+
   def generate_api_key
     begin
       self.api_key = SecureRandom.hex

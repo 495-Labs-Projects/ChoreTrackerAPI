@@ -1,5 +1,13 @@
 class ApplicationController < ActionController::API
   include ActionController::HttpAuthentication::Token::ControllerMethods
+  include ActionController::HttpAuthentication::Basic::ControllerMethods
+
+  swagger_controller :application, "Application Management"
+
+  swagger_api :token do |api|
+    summary "Authenticate with email and password to get token"
+    param :header, "Authorization", :string, :required, "Email and password in the format of: Basic {Base64.encode64('email:password')}"
+  end
 
   class << self
     def inherited(subclass)
@@ -19,9 +27,25 @@ class ApplicationController < ActionController::API
     end
   end
 
-  before_action :authenticate
+
+  before_action :authenticate, except: [:token]
+
+  # A method to handle initial authentication
+  def token
+    authenticate_username_password || render_unauthorized
+  end
+  
 
   protected
+
+  def authenticate_username_password
+    authenticate_or_request_with_http_basic do |email, password|
+      user = User.authenticate(email, password)
+      if user
+        render json: user
+      end
+    end
+  end
 
   def authenticate
     authenticate_token || render_unauthorized

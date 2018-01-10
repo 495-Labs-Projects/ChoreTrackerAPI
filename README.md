@@ -259,8 +259,8 @@ Show a TA that you have all the filtering and ordering params working for all th
 
     ```
     # login by email address
-    def self.authenticate(username, password)
-      find_by_username(username).try(:authenticate, password)
+    def self.authenticate(email, password)
+      find_by_email(email).try(:authenticate, password)
     end
     ```
 
@@ -301,7 +301,7 @@ Show a TA that you have all the filtering and ordering params working for all th
     end
     ```
 
-13. After running ```rails swagger:docs``` you can test out the token endpoint to see if you are able to get the token. (**Note**: as mentioned before the format of the Authorization header is supposed to be: ```Basic <Base64.encode64('email:password')>```)
+13. After running ```rails swagger:docs``` you can test out the token endpoint to see if you are able to get the user's token with the email and password. (**Note**: as mentioned before the format of the Authorization header is supposed to be: ```Basic <Base64.encode64('email:password')>```)
 
 
 # <span class="mega-icon mega-icon-issue-opened"></span>Stop
