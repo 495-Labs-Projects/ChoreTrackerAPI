@@ -109,7 +109,7 @@ Show a TA that you have all the filtering and ordering params working for all th
     end
     ```
 
-4. Now we should create the User controller and the Swagger Docs for the controller. This should be quick since you have done this already for all the other controllers. (Note: make sure that the user params method permits these parameters because we don't want them creating the api_key: params.permit(:email, :password, :password_confirmation, :role, :api_key, :active)) After you are done, verify that it is the same as below and make sure the create documentation has the right form parameters. Also add the user resources to the routes.rb and run ```rails swagger:docs```
+4. Now we should create the User controller and the Swagger Docs for the controller. This should be quick since you have done this already for all the other controllers. (Note: make sure that the user params method permits these parameters because we don't want them creating the api_key: params.permit(:email, :password, :password_confirmation, :role, :api_key, :active)) After you are done, verify that it is the same as below and make sure the create documentation has the right form parameters. **Also add the user resources to the routes.rb and run ```rails swagger:docs```**
 
     ```
     class UsersController < ApplicationController
@@ -255,10 +255,58 @@ Show a TA that you have all the filtering and ordering params working for all th
 
 9. Make sure you run ```rails swagger:docs```, start up the server and check out the swagger docs. For each endpoint, there should be a header param. In order to successfully hit any of the endpoints, you will need to fill out this param too. This is a little bit more complicated as before since rails has its own format/way to do things. In the input box, enter ```Token token=<api_token>``` and replace <api_token> with the token from the user you created before. Now check that the API works with the token authentication!
 
+10. Now that you have the token authentication implemented for each of the endpoints, there's no way for someone to access the api if they forgot their token. However, a user will most likely still remember their email/password, which is why we will need to create one more endpoint where users will be able to retrieve their token with their correct email/password. Let's call this endpoint ```/token```. First you will need to add a helper method to your user model that authenticates the user by email and password:
+
+    ```
+    # login by email address
+    def self.authenticate(username, password)
+      find_by_username(username).try(:authenticate, password)
+    end
+    ```
+
+11. Also add the following to the ```application_controller.rb``` file/class along with all the other authentication code. We are using something called Basic Http Authentication which is provided by rails, that authenticates with email and password. However, since it is rails, we will need to do everything the rails way. The way they intake the email/password is through the ```Authorization``` header and it needs to be in the format of ```Basic <Base64.encode64('email:password')>```. Let's say that the email and password for a user is "test@example.com" and "password" respectively (and the encoded email:password is "dGVzdEBleGFtcGxlLmNvbTpwYXNzd29yZA==\n") then the full header should be "Authorization: Basic dGVzdEBleGFtcGxlLmNvbTpwYXNzd29yZA==\n"
+
+    ```ruby
+    include ActionController::HttpAuthentication::Basic::ControllerMethods
+
+    before_action :authenticate, except: [:token]
+
+    # A method to handle initial authentication
+    def token
+      authenticate_username_password || render_unauthorized
+    end
+
+    protected
+
+    def authenticate_username_password
+      authenticate_or_request_with_http_basic do |email, password|
+        user = User.authenticate(email, password)
+        if user
+          render json: user
+        end
+      end
+    end
+    ```
+
+11. After adding this don't forget to all the token action to the ```routes.rb``` file.
+
+12. Also now that you have an endpoint in the application controller, you will need to add swagger docs to it. 
+
+    ```ruby
+    swagger_controller :application, "Application Management"
+
+    swagger_api :token do |api|
+      summary "Authenticate with email and password to get token"
+      param :header, "Authorization", :string, :required, "Email and password in the format of: Basic {Base64.encode64('email:password')}"
+    end
+    ```
+
+13. After running ```rails swagger:docs``` you can test out the token endpoint to see if you are able to get the token. (**Note**: as mentioned before the format of the Authorization header is supposed to be: ```Basic <Base64.encode64('email:password')>```)
+
 
 # <span class="mega-icon mega-icon-issue-opened"></span>Stop
 
-Show a TA that you have the whole ChoreTracker API working with all its components! Also show the TA your git log so he/she can see that you've made regular commits. Make sure the TA signs your sheet.
+Show a TA that you have the whole ChoreTracker API is authenticated properly with the token endpoint as well.
 * * *
 
 
