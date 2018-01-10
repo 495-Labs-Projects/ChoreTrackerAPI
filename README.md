@@ -52,11 +52,20 @@ After the first API lab you should already have a working API. One thing that we
 
 7. The one filtering scope that is slightly different is the ```:by_task``` scope, since it actually takes in a parameter thats not just true/false. In this case the logic is slightly different:
 
-```
-filtering_params.each do |scope|
-  objects = objects.public_send(scope, params[scope]) if params[scope].present?
-end
-```
+    ```
+    if params[:by_task].present?
+      @chores = @chores.by_task(params[:by_task]) 
+    end
+    ```
+
+8. Make sure you add all the appropriate swagger docs to the index actions of each controller and test out the filtering/ordering params.
+
+
+# <span class="mega-icon mega-icon-issue-opened"></span>Stop
+
+Show a TA that you have all the filtering and ordering params working for all the controllers. 
+* * *
+
 
 
 # Part 6 - Token Authentication
