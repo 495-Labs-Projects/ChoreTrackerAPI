@@ -6,6 +6,7 @@ class Child < ApplicationRecord
 
   scope :alphabetical, -> { order(:last_name, :first_name) }
   scope :active, -> {where(active: true)}
+  scope :inactive, -> {where(active: false)}
 
   def name
     return first_name + " " + last_name

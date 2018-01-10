@@ -1,15 +1,62 @@
 # Objectives
 
-In this lab we will be creating an RESTful API version of the ChoreTracker application, which means there are no need for views (just controller and model code). There will be 4 things that will be covered in this lab:
+In this lab we will continue to work on the Chore Tracker API and adding additional features to it. There will be 4 things that will be covered in this lab:
 
-- Creating the API itself
-- Documenting the API with swagger docs
-- Serialization Customizations
+- Filtering and Odering the index action
 - Stateless authentication for the API
+- Versioning the API
+- Throttling API usage
 
 
 # Part 5 - Filtering and Ordering
 
+After the first API lab you should already have a working API. One thing that we will be improving upon in this lab is filtering and ordering. This is mainly for the the index action of each controller and allows users of your API to filter out and order the list of objects. For example, if you want to get all the active tasks right now, you will have to hit the ```/tasks``` endpoint to get all the tasks back and then filter out the inactive ones manually using Javascript. However, a better option would be to pass in an active parameter that states what you want. So for the example, ```/tasks?active=true``` will get you all the active tasks, ```/tasks?active=false``` will get you all the inactive tasks, and ```/tasks``` will get you all the tasks. With the format, you can concat different filters and ordering together.
+
+1. Let's first add this feature to the ```children_controller.rb```. Open up the ```child.rb``` model file first and notice the scopes that are present (:active and :alphabetical). :active is a filtering scope and :alphabetical is a ordering scope. In this case, we will probably need another scope called ```:inactive``` to be the opposite of the :active filtering scope. Add the following :inactive scope to the child model file:
+
+    ```ruby
+    scope :inactive, -> {where(active: false)}
+    ```
+
+2. Now go the ChildrenController and let's add this new active filter to the index action. In this case, the ```:active``` param will be the one that triggers the filter, and do nothing if the param isn't present. Also the only reason that we are checking if it's equal to the string "true" is that params are all treated as strings. Copy the following code into the index action (ask a TA for help if you don't understand the logic here):
+
+    ```ruby
+    def index
+      @children = Child.all
+      if(params[:active].present?)
+        @children = params[:active] == "true" ? @children.active : @children.inactive
+      end
+
+      render json: @children
+    end
+    ```
+
+3. Since there was also a ```:alphabetical``` ordering scope, we will need to add that to the index action too. In this case, it will behave slightly different than the filtering scope. This is because it will only alphabetically order the children if the ```:alphabetical``` param is present and true. Add the following right after the active filter param in the index action:
+
+    ```ruby
+    if params[:alphabetical].present? && params[:alphabetical] == "true"
+      @children = @children.alphabetical
+    end
+    ```
+
+4. Now before we test this out, we will need to add the proper params to the swagger docs. Add the following ```:query``` params to the ChildrenController's swagger docs' index action and test it out (**Note**: don't forget to run ```rails swagger:docs``` afterwards):
+
+    ```ruby
+    param :query, :active, :boolean, :optional, "Filter on whether or not the child is active"
+    param :query, :alphabetical, :boolean, :optional, "Order children by alphabetical"
+    ```
+
+5. After you tested everything out for children with swagger docs, we will move on to doing the same thing for tasks and chores. Since Tasks is basically the same as Children, you will be completing the ```:active``` and ```:alphabetical``` filtering/ordering scopes on your own.
+
+6. Chores is a bit more complicated but not that much. All the necessary scopes are there for you. You wil be creating the filtering params on your own for ```:done``` and ```:upcoming``` (where ```:pending``` and ```:past``` are the opposite scopes respectively). Also you will be creating the ordering param ```:alphabetical```. 
+
+7. The one filtering scope that is slightly different is the ```:by_task``` scope, since it actually takes in a parameter thats not just true/false. In this case the logic is slightly different:
+
+```
+filtering_params.each do |scope|
+  objects = objects.public_send(scope, params[scope]) if params[scope].present?
+end
+```
 
 
 # Part 6 - Token Authentication
@@ -246,7 +293,8 @@ Show a TA that you have the whole ChoreTracker API working with all its componen
     ```ruby
     module ChoreTrackerAPI
       class Application < Rails::Application
-        # Exisiting code
+        # Other code
+        # ...
     
         config.middleware.use Rack::Attack
       end
