@@ -46,7 +46,7 @@ After the first API lab you should already have a working API. One thing that we
     param :query, :alphabetical, :boolean, :optional, "Order children by alphabetical"
     ```
 
-5. After you tested everything out for children with swagger docs, we will move on to doing the same thing for tasks and chores. Since Tasks is basically the same as Children, you will be completing the ```:active``` and ```:alphabetical``` filtering/ordering scopes on your own.
+5. After you tested everything out for children with swagger docs, we will move on to doing the same thing for tasks and chores. Since Tasks is basically the same as Children, you will be completing the ```:active``` and ```:alphabetical``` filtering/ordering scopes on your own. (**Note**: Make sure you add the necessary scopes to the task model.)
 
 6. Chores is a bit more complicated but not that much. All the necessary scopes are there for you. You wil be creating the filtering params on your own for ```:done``` and ```:upcoming``` (where ```:pending``` and ```:past``` are the opposite scopes respectively). Also you will be creating the ordering param ```:alphabetical```. 
 

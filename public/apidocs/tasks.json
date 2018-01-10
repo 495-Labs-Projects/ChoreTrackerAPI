@@ -15,6 +15,20 @@
               "type": "string",
               "description": "Authentication token in the format of: Token token=<token>",
               "required": true
+            },
+            {
+              "paramType": "query",
+              "name": "active",
+              "type": "boolean",
+              "description": "Filter on whether or not the task is active",
+              "required": false
+            },
+            {
+              "paramType": "query",
+              "name": "alphabetical",
+              "type": "boolean",
+              "description": "Order tasks by alphabetical",
+              "required": false
             }
           ],
           "summary": "Fetches all Tasks",
