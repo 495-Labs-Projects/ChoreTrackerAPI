@@ -376,5 +376,10 @@ Show a TA that you have properly serialized JSON objects in the ChoreTrackerAPI!
 
 # Part 4 - CORS
 
+CORS stands for Cross Origin Resource Sharing. Most web applications have CORS disabled, which means that the web app prevents JavaScript from making requests that is outside of the domain. For example, let's say that the web application is hosted on ```cmuis.net```, if CORS is disabled then Javascript code located on another domain (```testdomain.com```) can't make a request to cmuis.net. This is meant to protect malicious Javascript from making requests to your web application.
 
+However, for the purposes of an API we want CORS to be enabled since we would like code from other domains to access our API. To demonstrate that CORS isn't enabled right now, please create another HTML file and copy paste the code below:
+
+```
+```
 
