@@ -16,7 +16,7 @@ In this lab we will be creating an RESTful API version of the ChoreTracker appli
   $ rails new ChoreTrackerAPI --api
   ```
 
-2. 2. Just like the ChoreTracker app that you have built before, there will be 3 main entities to the ChoreTracker application, please review the old lab if you want any clarifications on the ERD. The following are the data dictionaries for the 3 models. Based on these specifications, please generate all the models with all the proper fields and then run ```rails db:migrate```. This step should be the same as if you were building a regular rails application. (ex. ```rails generate model Child first_name:string last_name:string active:boolean```)
+2. Just like the ChoreTracker app that you have built before, there will be 3 main entities to the ChoreTracker application, please review the old lab if you want any clarifications on the ERD. The following are the data dictionaries for the 3 models. Based on these specifications, please generate all the models with all the proper fields and then run ```rails db:migrate```. This step should be the same as if you were building a regular rails application. (ex. ```rails generate model Child first_name:string last_name:string active:boolean```)
   - Child
     - first_name (string)
     - last_name (string)
