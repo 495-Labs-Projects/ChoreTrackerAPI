@@ -363,10 +363,10 @@ Show a TA that you have properly created the documentation for the ChoreTrackerA
     end
     ```
 
-#### Optional
-8. To make another improvement to the serialization is to actually allow users to preview what task the chore entails instead of just an id. This is a little bit more complex since we can't just have one serializer for tasks. We want one serializer that shows all information about a task when we hit the index action of the tasks controller, and we want another serializer that preview the task with just the id and the name. To do this we need another serializer! First make another file in the serializers folder and call it task_preview_serializer.rb and make a new class called TaskPreviewSerializer.
+8. To make another improvement to the serialization is to actually allow users to preview what task the chore entails instead of just an id. This is a little bit more complex since we can't just have one serializer for tasks. We want one serializer that shows all information about a task when we hit the index action of the tasks controller, and we want another serializer that preview the task with just the id and the name. To do this we need another serializer! First make another file in the serializers folder and call it ```chore_task_serializer.rb``` and make a new class called ```ChoreTaskSerializer```.
 
-9. Now go to your chore_serializer and instead of dispaying task_id, have it display :task and write a custom serialization method called task. In this method all you need to return is the preview version of the serialized task. Call over a TA if you are having trouble with this concept! Now test if it worked by going to the /children endpoint! It should display the task id and name instead of just the task id.
+9. Now go to your chore_serializer and instead of dispaying task_id, have it display :task and write a custom serialization method called task. In this method all you need to return is the preview version of the serialized task which includes the ```:id``` and ```name``` of the task. Call over a TA if you are having trouble with this concept! Now test if it worked by going to the /children endpoint! It should display the task id and name instead of just the task id.
+
 
 # <span class="mega-icon mega-icon-issue-opened"></span> Stop
 Show a TA that you have properly serialized JSON objects in the ChoreTrackerAPI!
