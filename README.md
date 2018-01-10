@@ -378,8 +378,66 @@ Show a TA that you have properly serialized JSON objects in the ChoreTrackerAPI!
 
 CORS stands for Cross Origin Resource Sharing. Most web applications have CORS disabled, which means that the web app prevents JavaScript from making requests that is outside of the domain. For example, let's say that the web application is hosted on ```cmuis.net```, if CORS is disabled then Javascript code located on another domain (```testdomain.com```) can't make a request to cmuis.net. This is meant to protect malicious Javascript from making requests to your web application.
 
-However, for the purposes of an API we want CORS to be enabled since we would like code from other domains to access our API. To demonstrate that CORS isn't enabled right now, please create another HTML file and copy paste the code below:
+However, for the purposes of an API we want CORS to be enabled since we would like code from other domains to access our API. The only reason that the swagger docs works in hitting the API's endpoints is that the swagger docs is located at the same domain. To demonstrate that CORS isn't enabled right now, please create another HTML file and copy paste the code below (**Note**: Make sure to change the url to something other than localhost:3000 if you are using c9 or something else):
 
-```
-```
+    ```html
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>CORS Test</title>
+      <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+      <script type="text/javascript">
+        $.ajax({
+          method: "GET",
+          url: "http://localhost:3000/children",
+          success: function(res) {
+            alert("Success");
+            console.log(res);
+          },
+          error: function(res) {
+            alert("Error");
+            console.log(res);
+          }
+        })
+      </script>
+    </head>
+    <body>
+      <h1>CORS Test</h1>
+    </body>
+    </html>
+    ```
+
+After creating this new simple HTML page (let's call it ```cors_test.html```), just open it up. After it tries to make an AJAX request to the ```/children``` endpoint, it should alert out "Error" and if you look in the Console (Right click -> Inspect Element -> Console) there should be an error message saying "No 'Access-Control-Allow-Origin' header is present". This basically means that the API located at ```localhost:3000/children``` doesn't allow for CORS access.
+
+1. In order to fix this for your Chore Tracker API, you will need this new gem called rack-cors (Read more about it here: https://github.com/cyu/rack-cors). Add the following to your Gemfile:
+
+    ```
+    gem 'rack-cors'
+    ```
+
+2. Next go to the ```config/application.rb``` file and add the following code to it within the Application class at the end. Notice the code ```:methods => [:get, :post, :put]```, this is how rack-cors will be able to whitelist certain types of request. For example, if you don't want anyone from another domain to make post requests (or create new things) to your API, then remove that. If you want to allow them to make delete requests, then add it in like this: ```:methods => [:get, :post, :put, :delete]```.
+
+    ```
+    module ChessCampAPI2018
+      class Application < Rails::Application
+        # some other code
+        # ...
+
+        config.middleware.insert_before 0, Rack::Cors do
+          allow do
+            origins '*'
+            resource '*', :headers => :any, :methods => [:get, :post, :put]
+          end
+        end
+
+      end
+    end
+    ```
+
+3. Restart your server and try to refresh the ```cors_test.html``` page. Now it should alert "Success" and if you look at the console again, the original error should be gone and the actual children JSON objects will be displayed.
+
+
+# <span class="mega-icon mega-icon-issue-opened"></span> Stop
+Show a TA that your API now allows for Cross Origin Requests!
+* * *
 
