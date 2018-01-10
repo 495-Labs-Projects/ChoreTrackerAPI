@@ -15,6 +15,34 @@
               "type": "string",
               "description": "Authentication token in the format of: Token token=<token>",
               "required": true
+            },
+            {
+              "paramType": "query",
+              "name": "done",
+              "type": "boolean",
+              "description": "Filter on whether or not the chore is done",
+              "required": false
+            },
+            {
+              "paramType": "query",
+              "name": "upcoming",
+              "type": "boolean",
+              "description": "Filter on whether or not the chore is upcoming",
+              "required": false
+            },
+            {
+              "paramType": "query",
+              "name": "by_task",
+              "type": "boolean",
+              "description": "Order chores by task",
+              "required": false
+            },
+            {
+              "paramType": "query",
+              "name": "chronological",
+              "type": "boolean",
+              "description": "Order chores by chronological",
+              "required": false
             }
           ],
           "summary": "Fetches all Chores",

@@ -8,6 +8,10 @@ class ChoresController < ApplicationController
   swagger_api :index do
     summary "Fetches all Chores"
     notes "This lists all the chores"
+    param :query, :done, :boolean, :optional, "Filter on whether or not the chore is done"
+    param :query, :upcoming, :boolean, :optional, "Filter on whether or not the chore is upcoming"
+    param :query, :by_task, :boolean, :optional, "Order chores by task"
+    param :query, :chronological, :boolean, :optional, "Order chores by chronological"
   end
 
   # Show needs a param which is which chore id to show.
@@ -60,6 +64,19 @@ class ChoresController < ApplicationController
   # GET /chores
   def index
     @chores = Chore.all
+    if(params[:done].present?)
+      @chores = params[:done] == "true" ? @chores.done : @chores.pending
+    end
+    if(params[:upcoming].present?)
+      @chores = params[:upcoming] == "true" ? @chores.upcoming : @chores.past
+    end
+
+    if params[:by_task].present? && params[:by_task] == "true"
+      @chores = @chores.by_task
+    end
+    if params[:chronological].present? && params[:chronological] == "true"
+      @chores = @chores.chronological
+    end
 
     render json: @chores
   end

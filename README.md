@@ -48,17 +48,9 @@ After the first API lab you should already have a working API. One thing that we
 
 5. After you tested everything out for children with swagger docs, we will move on to doing the same thing for tasks and chores. Since Tasks is basically the same as Children, you will be completing the ```:active``` and ```:alphabetical``` filtering/ordering scopes on your own. (**Note**: Make sure you add the necessary scopes to the task model.)
 
-6. Chores is a bit more complicated but not that much. All the necessary scopes are there for you. You wil be creating the filtering params on your own for ```:done``` and ```:upcoming``` (where ```:pending``` and ```:past``` are the opposite scopes respectively). Also you will be creating the ordering param ```:alphabetical```. 
+6. Chores is a bit more complicated but not that much. All the necessary scopes are there for you. You wil be creating the filtering params on your own for ```:done``` and ```:upcoming``` (where ```:pending``` and ```:past``` are the opposite scopes respectively). Also you will be creating the ordering params ```:alphabetical``` and ```:by_task```. 
 
-7. The one filtering scope that is slightly different is the ```:by_task``` scope, since it actually takes in a parameter thats not just true/false. In this case the logic is slightly different:
-
-    ```
-    if params[:by_task].present?
-      @chores = @chores.by_task(params[:by_task]) 
-    end
-    ```
-
-8. Make sure you add all the appropriate swagger docs to the index actions of each controller and test out the filtering/ordering params.
+7. Make sure you add all the appropriate swagger docs to the index actions of each controller and test out the filtering/ordering params.
 
 
 # <span class="mega-icon mega-icon-issue-opened"></span>Stop
