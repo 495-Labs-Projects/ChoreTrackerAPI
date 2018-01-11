@@ -313,7 +313,59 @@ Show a TA that you have the whole ChoreTracker API is authenticated properly wit
 
 # Part 7 - Versioning
 
+Versioning your API is crucial! Before releasing your public API to the public, you should consider implementing some form of versioning. Versioning breaks your API up into multiple version namespaces, such as ```v1``` and ```v2```, so that you can maintain backwards compatibility for existing clients whenever you introduce breaking changes into your API, simply by incrementing your API version.
 
+In this lab we will be setting up versioning in the following format (i.e. ```GET http://localhost:3000/v1/children/```):
+
+```
+http://<domain>/<version>/<route>
+```
+
+1. Since you only have one version of your api, you will need to put all your controllers under the namespace ```Api::V1```. We only need to make the changes to the controller and not the models because the only main changes that should happen to an API is in the controllers and serializers. Rearrange all of your controllers into this folder structure:
+
+    ```
+    app/controllers/
+    .
+    |-- api
+    |   |-- v1
+    |       |-- application_controller.rb
+    |       |-- children_controller.rb
+    |       |-- chores_controller.rb
+    |       |-- tasks_controller.rb
+    |       |-- users_controller.rb
+    ```
+
+3. Because you have changed the folder structure for all of your controllers, you will also need to update the module naming scheme for each controller (add ```module Api::V1```). Follow the pattern below for the ```application_controller.rb``` and make the necessary changes for all the controllers:
+
+    ```ruby
+    module Api::V1
+      class ApplicationController < ActionController::API
+        # Some Controller Code
+        # ...
+      end
+    end
+    ```
+
+4. Now that you have completed all the necessary changes to your controllers, you will need to make similar changes to the serializers. You will need to modify the folder structure in the same way too (using ```api/v1/<serializers>```) and adding the ```module Api::V1``` to all the serializers. 
+
+5. After you have properly fixed all the namespaces for the controllers and serializers, we need to fix the same namespace issue with the routes. As mentioned before, we want our routes to be formatted something like this ```http://localhost:3000/v1/children/```. All you need to do is add ```scope module: 'api' do``` and ```namespace :v1 do```. This allows the route to be ```/v1/children/``` instead of ```/api/v1/children```, but at the same time be able to find the right namespace of ```Api::V1```. (Note: If later on, you want the routes to be ```/api/v1/children``` then all you need to do is to change ```scope module: 'api' do``` to ```namespace :api do```.)
+
+    ```ruby
+    Rails.application.routes.draw do
+      scope module: 'api' do
+        namespace :v1 do
+          resources :children
+          resources :tasks
+          resources :chores
+          resources :users
+
+          get :token, controller: 'application'
+        end
+      end
+    end
+    ```
+
+6. Make sure you restart your server and run ```rails swagger:docs``` again so the swagger docs can have the updated routes. Now you should test that the API routes are working.
 
 # Part 8 - Rack Attack
 
