@@ -9,5 +9,14 @@ Rails.application.routes.draw do
 
       get :token, controller: 'application'
     end
+
+    namespace :v2 do
+      resources :children
+      resources :tasks
+      resources :chores
+      resources :users
+
+      get :token, controller: 'application'
+    end
   end
 end

@@ -2,10 +2,10 @@
   "apiVersion": "2.0",
   "swaggerVersion": "1.2",
   "basePath": "http://localhost:3000",
-  "resourcePath": "tasks",
+  "resourcePath": "chores",
   "apis": [
     {
-      "path": "/v1/tasks.json",
+      "path": "/v2/chores.json",
       "operations": [
         {
           "parameters": [
@@ -18,28 +18,42 @@
             },
             {
               "paramType": "query",
-              "name": "active",
+              "name": "done",
               "type": "boolean",
-              "description": "Filter on whether or not the task is active",
+              "description": "Filter on whether or not the chore is done",
               "required": false
             },
             {
               "paramType": "query",
-              "name": "alphabetical",
+              "name": "upcoming",
               "type": "boolean",
-              "description": "Order tasks by alphabetical",
+              "description": "Filter on whether or not the chore is upcoming",
+              "required": false
+            },
+            {
+              "paramType": "query",
+              "name": "by_task",
+              "type": "boolean",
+              "description": "Order chores by task",
+              "required": false
+            },
+            {
+              "paramType": "query",
+              "name": "chronological",
+              "type": "boolean",
+              "description": "Order chores by chronological",
               "required": false
             }
           ],
-          "summary": "Fetches all Tasks",
-          "notes": "This lists all the tasks",
-          "nickname": "Api::V1::Tasks#index",
+          "summary": "Fetches all Chores",
+          "notes": "This lists all the chores",
+          "nickname": "Api::V2::Chores#index",
           "method": "get"
         }
       ]
     },
     {
-      "path": "/v1/tasks.json",
+      "path": "/v2/chores.json",
       "operations": [
         {
           "parameters": [
@@ -52,27 +66,34 @@
             },
             {
               "paramType": "form",
-              "name": "name",
-              "type": "string",
-              "description": "Name",
-              "required": true
-            },
-            {
-              "paramType": "form",
-              "name": "points",
+              "name": "child_id",
               "type": "integer",
-              "description": "Points",
+              "description": "Child ID",
               "required": true
             },
             {
               "paramType": "form",
-              "name": "active",
+              "name": "task_id",
+              "type": "integer",
+              "description": "Task ID",
+              "required": true
+            },
+            {
+              "paramType": "form",
+              "name": "due_on",
+              "type": "date",
+              "description": "Due On",
+              "required": true
+            },
+            {
+              "paramType": "form",
+              "name": "completed",
               "type": "boolean",
-              "description": "Active",
+              "description": "Completed",
               "required": true
             }
           ],
-          "summary": "Creates a new Task",
+          "summary": "Creates a new Chore",
           "responseMessages": [
             {
               "code": 406,
@@ -80,13 +101,13 @@
               "message": "Not Acceptable"
             }
           ],
-          "nickname": "Api::V1::Tasks#create",
+          "nickname": "Api::V2::Chores#create",
           "method": "post"
         }
       ]
     },
     {
-      "path": "/v1/tasks/{id}.json",
+      "path": "/v2/chores/{id}.json",
       "operations": [
         {
           "parameters": [
@@ -101,12 +122,12 @@
               "paramType": "path",
               "name": "id",
               "type": "integer",
-              "description": "Task ID",
+              "description": "Chore ID",
               "required": true
             }
           ],
-          "summary": "Shows one Task",
-          "notes": "This lists details of one task",
+          "summary": "Shows one Chore",
+          "notes": "This lists details of one chore",
           "responseMessages": [
             {
               "code": 404,
@@ -114,13 +135,13 @@
               "message": "Not Found"
             }
           ],
-          "nickname": "Api::V1::Tasks#show",
+          "nickname": "Api::V2::Chores#show",
           "method": "get"
         }
       ]
     },
     {
-      "path": "/v1/tasks/{id}.json",
+      "path": "/v2/chores/{id}.json",
       "operations": [
         {
           "parameters": [
@@ -135,32 +156,39 @@
               "paramType": "path",
               "name": "id",
               "type": "integer",
-              "description": "Task Id",
+              "description": "Chore ID",
               "required": true
             },
             {
               "paramType": "form",
-              "name": "name",
-              "type": "string",
-              "description": "Name",
-              "required": false
-            },
-            {
-              "paramType": "form",
-              "name": "points",
+              "name": "child_id",
               "type": "integer",
-              "description": "Points",
+              "description": "Child ID",
               "required": false
             },
             {
               "paramType": "form",
-              "name": "active",
+              "name": "task_id",
+              "type": "integer",
+              "description": "Task ID",
+              "required": false
+            },
+            {
+              "paramType": "form",
+              "name": "due_on",
+              "type": "date",
+              "description": "Due On",
+              "required": false
+            },
+            {
+              "paramType": "form",
+              "name": "completed",
               "type": "boolean",
-              "description": "Active",
+              "description": "Completed",
               "required": false
             }
           ],
-          "summary": "Updates an existing Task",
+          "summary": "Updates an existing Chore",
           "responseMessages": [
             {
               "code": 404,
@@ -173,13 +201,13 @@
               "message": "Not Acceptable"
             }
           ],
-          "nickname": "Api::V1::Tasks#update",
+          "nickname": "Api::V2::Chores#update",
           "method": "patch"
         }
       ]
     },
     {
-      "path": "/v1/tasks/{id}.json",
+      "path": "/v2/chores/{id}.json",
       "operations": [
         {
           "parameters": [
@@ -187,11 +215,11 @@
               "paramType": "path",
               "name": "id",
               "type": "integer",
-              "description": "Task Id",
+              "description": "Chore Id",
               "required": true
             }
           ],
-          "summary": "Deletes an existing Task",
+          "summary": "Deletes an existing Chore",
           "responseMessages": [
             {
               "code": 404,
@@ -199,7 +227,7 @@
               "message": "Not Found"
             }
           ],
-          "nickname": "Api::V1::Tasks#destroy",
+          "nickname": "Api::V2::Chores#destroy",
           "method": "delete"
         }
       ]

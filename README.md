@@ -321,6 +321,7 @@ In this lab we will be setting up versioning in the following format (i.e. ```GE
 http://<domain>/<version>/<route>
 ```
 
+Let's say you have already released the current version of your API to the public. After a few of months, you already have a bunch of users building apps around your API. Suddenly, you realize a huge improvement that you can make to your API. Just like with the ```chore_task_serializer.rb```, you want to make a preview serializer for the child for each task called ```chore_child_serializer.rb```. Therefore, you will need to change a param in the ```chore_serializer.rb```, namely ```child_id``` to just a child object. Unfortunately, you realize that if you want to make this huge improvement and release it, it will break a lot of your users' code (since they relied on the fact that the chore serializer to have a ```child_id```). This is a perfect time to utilize versioning!!!
 
 1. Since you only have one version of your api, you will need to put all your controllers under the namespace ```Api::V1```. We only need to make the changes to the controller and not the models because the only main changes that should happen to an API is in the controllers and serializers. Rearrange all of your controllers into this folder structure:
 
@@ -400,6 +401,43 @@ http://<domain>/<version>/<route>
 
 8. Make the necessary changes to all the create actions for all the controllers. Afterwards, test out that it works using swagger.
 
+9. Now that you have versioning in place, everything you have up to this point will be called v1. Let's go back to the original scenario that we had regarding the improvement of having a ```chore_child_serializer.rb```. In this case, we can just make ```v2```, so all users that were using v1, will have the exact version they were expecting, and new users can just begin utilizing the new and improved v2. Later on, users of v1, can slowly transition their application to v2. Versioning basically makes sure that any improvements you make to the API will not break the code that other people have written!
+
+10. Let's begin this improvement by making a ```v2``` folder in both the controllers and serializers (```/app/controllers/api/v2``` and ```/app/serializers/api/v2```) and copy all the contents from ```v1``` into there. Make sure you go through each of the files and change the module name from ```Api::V1``` to ```Api::V2```.
+
+11. Now make the necessary changes to the ```chore_serializer.rb``` and create a new ```chore_child_serializer.rb``` that just displays the ```:id, :name, :points_earned, :active``` of the child. 
+
+12. Lastly, you will need to make a minor change to the swagger docs initializer located at ```/config/initializers/swagger_docs.rb```. Under the registered apis, after version ```1.0```, create a version ```2.0``` and add the following, which is basically the same thing as version 1:
+
+    ```
+    "2.0" => {
+      # the extension used for the API
+      :api_extension_type => :json,
+      # the output location where your .json files are written to
+      :api_file_path => "public/apidocs",
+      # the URL base path to your API (make sure to change this if you are not using localhost:3000)
+      :base_path => "http://localhost:3000",
+      # if you want to delete all .json files at each generation
+      :clean_directory => false,
+      # add custom attributes to api-docs
+      :attributes => {
+        :info => {
+          "title" => "Chore Tracker API",
+          "description" => "Uses swagger ui and docs to document the ChoreTracker API"
+        }
+      }
+    }
+    ```
+
+13. Now you can run ```rails swagger:docs``` again and test out that ```v2/chores``` displays the child and not just the child_id!
+
+
+# <span class="mega-icon mega-icon-issue-opened"></span>Stop
+
+Show a TA that you have the whole ChoreTracker API versioned properly with a v1 and v2.
+* * *
+
+
 
 # Part 8 - Rack Attack
 
@@ -458,3 +496,9 @@ http://<domain>/<version>/<route>
     ```
 
 6. Now your application will be protected against any user/from an ip address from spamming your API and slowly down your server!
+
+
+# <span class="mega-icon mega-icon-issue-opened"></span>Stop
+
+Show a TA that you have the whole ChoreTracker API finished with throttling in place!
+* * *
