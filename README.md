@@ -321,6 +321,7 @@ In this lab we will be setting up versioning in the following format (i.e. ```GE
 http://<domain>/<version>/<route>
 ```
 
+
 1. Since you only have one version of your api, you will need to put all your controllers under the namespace ```Api::V1```. We only need to make the changes to the controller and not the models because the only main changes that should happen to an API is in the controllers and serializers. Rearrange all of your controllers into this folder structure:
 
     ```
@@ -365,8 +366,39 @@ http://<domain>/<version>/<route>
     end
     ```
 
-6. Make sure you restart your server and run ```rails swagger:docs``` again so the swagger docs can have the updated routes. Now you should test that the API routes are working.
+6. Make sure you restart your server and run ```rails swagger:docs``` again so the swagger docs can have the updated routes. Now you should test that the API routes are working, and notice that the routes all have ```/v1``` in front of them. You can also run ```rails routes``` to check the routes.
 
+7. All the get requests seem to work properly, but you may have noticed that creating a new instance (POST request) causes an error to show that states ```NoMethodError: undefined method 'child_url'```. This is caused by the the location param when render the newly created object. The way we have it now (for the children controller) is like below:
+
+    ```ruby
+    # POST /children
+    def create
+      @child = Child.new(child_params)
+
+      if @child.save
+        render json: @child, status: :created, location: @child
+      else
+        render json: @child.errors, status: :unprocessable_entity
+      end
+    end
+    ```
+
+    As mentioned before, the location param is something that exists in the headers which tells users of your API the location of where the newly created is. For example, let's say that the id of the newly created child is 1, then the location should be ```/v1/children/1```. However, because we changed the namespace, our controllers are still assuming that the location is still at ```/children/1```. In order to change it, we need to add ```[:v1, @child]```, like below:
+
+    ```ruby
+    # POST /children
+    def create
+      @child = Child.new(child_params)
+
+      if @child.save
+        render json: @child, status: :created, location: [:v1, @child]
+      else
+        render json: @child.errors, status: :unprocessable_entity
+      end
+    end
+    ```
+
+8. Make the necessary changes to all the create actions for all the controllers. Afterwards, test out that it works using swagger.
 
 
 # Part 8 - Rack Attack

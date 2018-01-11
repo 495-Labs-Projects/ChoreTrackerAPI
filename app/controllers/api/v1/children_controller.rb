@@ -82,7 +82,7 @@ module Api::V1
       @child = Child.new(child_params)
 
       if @child.save
-        render json: @child, status: :created, location: @child
+        render json: @child, status: :created, location: [:v1, @child]
       else
         render json: @child.errors, status: :unprocessable_entity
       end

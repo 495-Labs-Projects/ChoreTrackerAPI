@@ -92,7 +92,7 @@ module Api::V1
       @chore = Chore.new(chore_params)
 
       if @chore.save
-        render json: @chore, status: :created, location: @chore
+        render json: @chore, status: :created, location: [:v1, @chore]
       else
         render json: @chore.errors, status: :unprocessable_entity
       end

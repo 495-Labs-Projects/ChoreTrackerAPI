@@ -82,7 +82,7 @@ module Api::V1
       @task = Task.new(task_params)
 
       if @task.save
-        render json: @task, status: :created, location: @task
+        render json: @task, status: :created, location: [:v1, @task]
       else
         render json: @task.errors, status: :unprocessable_entity
       end
