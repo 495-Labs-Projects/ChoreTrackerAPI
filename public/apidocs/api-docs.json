@@ -4,23 +4,23 @@
   "basePath": "http://localhost:3000",
   "apis": [
     {
-      "path": "/apidocs/children.{format}",
+      "path": "/apidocs/api/v1/children.{format}",
       "description": "Children Management"
     },
     {
-      "path": "/apidocs/tasks.{format}",
+      "path": "/apidocs/api/v1/tasks.{format}",
       "description": "Tasks Management"
     },
     {
-      "path": "/apidocs/chores.{format}",
+      "path": "/apidocs/api/v1/chores.{format}",
       "description": "Chores Management"
     },
     {
-      "path": "/apidocs/users.{format}",
+      "path": "/apidocs/api/v1/users.{format}",
       "description": "Users Management"
     },
     {
-      "path": "/apidocs/application.{format}",
+      "path": "/apidocs/api/v1/application.{format}",
       "description": "Application Management"
     }
   ],

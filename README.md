@@ -367,6 +367,8 @@ http://<domain>/<version>/<route>
 
 6. Make sure you restart your server and run ```rails swagger:docs``` again so the swagger docs can have the updated routes. Now you should test that the API routes are working.
 
+
+
 # Part 8 - Rack Attack
 
 1. When developing an API in the real world, there are more things that you need to take care of before you put your application in production. One major thing is adding a layer of middleware to protect against malicious attacks. Middleware is everything that exists between your application server (what actually hosts your web app) and the actual Rails application. So what happens when you have an user that just keeps on spamming your API and slowing down your service? Well there are ways to prevent that through your middleware by throttling those users (basically telling them to back off a little bit before hitting your server again). One such middleware is Rack::Attack!!
